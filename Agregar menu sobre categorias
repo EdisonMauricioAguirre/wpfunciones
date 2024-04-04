@@ -1,0 +1,32 @@
+// Fragmento de codigo para agregar en archive.php
+//Este archivo permite mostrar un menu de categorias hijas en cada categoria madre. Esto permite un flujo automatizado de contenido sobre categorias.
+
+
+<div class="category-menu">
+    <ul class="nav">
+        <?php
+        // Get the current category ID
+        $current_cat_id = get_queried_object_id();
+
+        // Get the parent category ID if current category is a child
+        $current_cat_parent_id = get_term($current_cat_id)->parent;
+
+        // Determine the parent category ID to be used for displaying categories
+        $display_cat_id = ($current_cat_parent_id != 0) ? $current_cat_parent_id : $current_cat_id;
+
+        // Get the child categories of the parent category
+        $args = array(
+            'orderby'    => 'name',
+            'parent'     => $display_cat_id,
+            'hide_empty' => 1 // Now hide categories with no posts
+        );
+        $child_categories = get_categories( $args );
+
+        foreach ( $child_categories as $child_category ) {
+            echo '<li class="nav-item">';
+            echo '<a class="nav-link' . (($child_category->term_id == $current_cat_id) ? ' active' : '') . '" href="' . get_category_link( $child_category->term_id ) . '">' . $child_category->name . '</a>';
+            echo '</li>';
+        }
+        ?>
+    </ul>
+</div>
